@@ -1,0 +1,20 @@
+{
+  "name": "news-boy",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mauabe/news-boy.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mauabe/news-boy/issues"
+  },
+  "homepage": "https://github.com/mauabe/news-boy#readme"
+}
