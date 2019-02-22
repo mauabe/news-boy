@@ -1,6 +1,8 @@
 const express = require('express');
 const request = require('request');
 const stories = require('./stories');
+const PORT = 3000;
+
 
 const app = express();
 
@@ -28,15 +30,47 @@ app.get('/stories/:title', (req, res) => {
   res.json(stories.filter (story => story.title.includes(title)))
 });
 
-app.get('/topstories', (req, res) => {
+app.get('/topstories', (req, res, next) => {
+
   request(
     {url:'https://hacker-news.firebaseio.com/v0/topstories.json'},
     (error, response, body) => {
-      res.json(JSON.parse(body));
+      if(error || response.statusCode !== 200){
+        return next(new Error ('Error requesting top stories'));
+      }
+
+      const topStories = JSON.parse(body);
+      const limit = 10;
+
+      res.json(
+        topStories.slice(0, limit).map(story => (
+          request(
+            { url: `https://hacker-news.firebaseio.com/v0/item/${story}.json` },
+            (error, response, body) => {
+              if (error || response.statusCode !== 200) {
+                return next(new Error('Error requesting story item'));
+              }
+
+              console.log('JSON.parse(body)', JSON.parse(body));
+
+              return JSON.parse(body);
+            }
+          )
+        ))
+      );
     }
   )
 });
 
-const PORT = 3000;
+
+app.use((err, req, res, next) => {
+  console.log('err', err);
+
+  res.status(500).json({ type: 'error', message: err.message });
+   
+});
+
 
 app.listen(PORT, () => console.log(`listening on ${PORT}`));
+
+//commit
