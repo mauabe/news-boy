@@ -12,6 +12,7 @@ notes.txt
 # production
 /build
 /dist
+client/dist
 /.cache
 pubnub.config.json
 
