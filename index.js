@@ -1,20 +1,19 @@
 const express = require('express');
 const request = require('request');
-// const stories = require('./stories');
-const path = require ('path');
-const PORT = 3000;
-
+const path = require('path');
+const stories = require('./stories');
 
 const app = express();
 
 app.use((req, res, next) => {
-  console.log('Request details. Method: ', req.method);
-  console.log('Original url: ', req.originalUrl);
+  console.log('Request details. Method:', req.method, 'Original url:', req.originalUrl);
+
   next();
 });
 
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*');
+
   next();
 });
 
@@ -23,40 +22,37 @@ app.use(express.static(path.join(__dirname, 'client/dist')));
 app.get('/ping', (req, res) => {
   res.send('pong!');
 });
+
 // app.get('/stories', (req, res) => {
 //   res.json(stories);
 // });
 
 // app.get('/stories/:title', (req, res) => {
 //   const {title } = req.params;
-
 //   res.json(stories.filter (story => story.title.includes(title)))
 // });
 
 app.get('/topstories', (req, res, next) => {
-
   request(
-    {url:'https://hacker-news.firebaseio.com/v0/topstories.json'},
+    { url: 'https://hacker-news.firebaseio.com/v0/topstories.json' },
     (error, response, body) => {
-      if(error || response.statusCode !== 200){
-        return next(new Error ('Error requesting top stories'));
+      if (error || response.statusCode !== 200) {
+        return next(new Error('Error requesting top stories'));
       }
 
       const topStories = JSON.parse(body);
-
-      // console.log('topStories: ', topStories); //array of storyIDs
-      const limit = 4;
+      const limit = 10;
 
       res.json(
-        topStories.slice(0, limit).map(storyId => (
+        topStories.slice(0, limit).map(story => (
           request(
-            { url: `https://hacker-news.firebaseio.com/v0/item/${storyId}.json` },
+            { url: `https://hacker-news.firebaseio.com/v0/item/${story}.json` },
             (error, response, body) => {
               if (error || response.statusCode !== 200) {
                 return next(new Error('Error requesting story item'));
               }
 
-              console.log('JSON.parse(body) LIMIT 4: ', JSON.parse(body));
+              console.log('JSON.parse(body) LIMIT 10:', JSON.parse(body));
 
               return JSON.parse(body);
             }
@@ -67,15 +63,22 @@ app.get('/topstories', (req, res, next) => {
   )
 });
 
-
 app.use((err, req, res, next) => {
-  console.log('err', err);
-
   res.status(500).json({ type: 'error', message: err.message });
-   
 });
 
-
+const PORT = 3000;
 app.listen(PORT, () => console.log(`listening on ${PORT}`));
 
 //commit
+
+//NEWSAPI.org
+
+const url = 'https://newsapi.org/v2/top-headlines?' +
+          'country=us&' +
+          'apiKey=41fded1bd2c448faba0476f9a5aca4a3';
+var req = new Request(url);
+fetch(req)
+    .then(function(response) {
+        console.log(response.json());
+    })
