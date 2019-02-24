@@ -1,12 +1,26 @@
 import React, { Component } from 'react';
+import axios from 'axios';
+
 
 class App extends Component {
   state = { stories: [] };
 
   componentDidMount() {
-    fetch('http://localhost:3000/topstories')
-      .then(response => response.json())
-      .then(json => this.setState({ stories: json }))
+  //   fetch('http://localhost:3000/topstories')
+  //     .then(response => response.json())
+  //     .then(json => this.setState({ stories: json }))
+  //     .catch(error => alert(error.message));
+  
+  axios.get('http://localhost:3000')
+  // axios.get(`${document.location.origin}/`)
+      .then(response => {
+        // console.log(response)
+        const stories = response.data.slice(0, 10)
+        this.setState = ({ stories })
+        
+        console.log(stories);
+      })
+  
       .catch(error => alert(error.message));
   }
   

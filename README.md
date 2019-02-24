@@ -1,4 +1,4 @@
 # News Boy
 
 
-A news API that aggregates new from Hacker News.
+A news API that aggregates news from Hacker News.
